@@ -1,0 +1,118 @@
+﻿@model IEnumerable<SupportLine.Models.Ticket>
+@using Microsoft.AspNetCore.Http
+
+@{
+    ViewData["Title"] = "Customer Dashboard";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Welcome, @ViewBag.Username!</h2>
+        <div>
+            <a asp-controller="Tickets" asp-action="Create" class="btn btn-theme shadow-sm me-2" style="background-color: #008080; color: white;">Submit New Ticket</a>
+        </div>
+    </div>
+
+    <div class="card-shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0">My Support Tickets</h4>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Ticket ID</th>
+                            <th>Subject</th>
+                            <th>Description</th>
+                            <th>Date Created</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center p-4 text-muted">
+                                    You have not submitted any tickets yet. Click "Submit New Ticket" to get started!
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var ticket in Model)
+                            {
+                                <tr>
+                                    <td class="align-middle">@ticket.TicketID</td>
+                                    
+                                    <td class="align-middle fw-bold">
+                                        <a asp-action="Details" asp-route-id="@ticket.TicketID" class="text-decoration-none text-teal">
+                                            @ticket.Subject
+                                        </a>
+                                    </td>
+
+                                    <td class="align-middle">@(ticket.Description.Length > 50 
+                                        ? ticket.Description.Substring(0,50) + "..." : ticket.Description)</td>
+
+                                    <td class="align-middle">@ticket.DateCreated.ToString("MMM dd, yyyy h:mm:tt")</td>
+                                    <td class="align-middle">
+                                        @{
+                                            string badgeClass = "bg-secondary";
+                                            if (ticket.StatusName =="Open") badgeClass = "bg-primary";
+                                            else if (ticket.StatusName =="In Progress") badgeClass = "bg-warning text-dark"; //Yellow
+                                            else if (ticket.StatusName =="Resolved") badgeClass = "bg-success"; //Green
+                                            else if (ticket.StatusName == "Closed") badgeClass = "bg-danger"; //Red
+                                        }
+                                        <span class="badge @badgeClass fs-6">@ticket.StatusName</span>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (TempData["EmailNotification"] != null)
+{
+    <script>
+        // Display the email notification message in an alert box when the page loads
+        window.onload = function() {
+            alert('@TempData["EmailNotification"]');
+        };
+    </script>
+}
+
+<style>
+    .bg-orange {
+        background-color: #fd7e14 !important;
+        color: white;
+    }
+
+    /* Makes background Beige */
+    body {
+        background-color: #F5F5DC !important,
+    }
+
+    /* Changes primary buttons to Teal*/
+    .btn-primary {
+        background-color: #008080 !important;
+        border-color: #006666 !important;
+        color: white !important;
+    }
+
+        .btn-primary:hover {
+            background-color: #006666 !important;
+            border-color: #004c4c !important;
+        }
+
+    .bg-dark {
+        background-color: #008080 !important;
+    }
+
+    .card {
+        border: 1px solid #008080;
+    }
+</style>

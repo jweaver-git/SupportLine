@@ -1,0 +1,78 @@
+﻿@model SupportLine.Models.Ticket
+
+@{
+    ViewData["Title"] = "Submit New Ticket";
+}
+
+<style>
+    /* Makes background Beige */
+    body {
+        background-color: #F5F5DC !important,
+    }
+
+    /* Changes primary buttons to Teal*/
+    .btn-primary {
+        background-color: #008080 !important;
+        border-color: #006666 !important;
+        color: white !important;
+    }
+
+        .btn-primary:hover {
+            background-color: #006666 !important;
+            border-color: #004c4c !important;
+        }
+
+    .bg-dark {
+        background-color: #008080 !important;
+    }
+
+    .card {
+        border: 1px solid #008080;
+    }
+
+    .card-header.bg-teal {
+        background-color: #008080 !important;
+        color: white;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card-shadow">
+                <div class="card-header bg-teal">
+                    <h2>Submit a New Support Ticket</h2>
+                </div>
+                <div class="card-body p-4">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <form asp-action="Create" method="post">
+
+                        <div class=" form-group mb-4">
+                            <label asp-for="Subject" class="control-label fw-bold fs-5">Subject</label>
+                            <input asp-for="Subject" class="form-control form-control-lg" placeholder="Briefly summarize your issue"/>
+                            <span asp-validation-for="Subject" class="text-danger fw-bold"></span>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="Description" class="control-label fw-bold fs-5">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="6" placeholder="Provide a detailed description of your issue"></textarea>
+                            <span asp-validation-for="Description" class="text-danger fw-bold"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <a asp-controller="Tickets" asp-action="CustomerDashboard" class="btn btn-outline-secondary btn-lg">Cancel</a>
+                            <button type="submit" class="btn btn-primary btn-lg">Submit Ticket</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

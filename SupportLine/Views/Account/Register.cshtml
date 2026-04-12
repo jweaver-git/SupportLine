@@ -1,0 +1,82 @@
+﻿@model SupportLine.Models.User
+
+@{
+    ViewData["Title"] = "Create Account";
+}
+
+<style>
+    /* Makes background Beige */
+    body {
+        background-color: #F5F5DC !important,
+    }
+
+    /* Changes primary buttons to Teal*/
+    .btn-primary {
+        background-color: #008080 !important;
+        border-color: #006666 !important;
+        color: white !important;
+    }
+
+    .btn-primary:hover {
+        background-color: #006666 !important;
+        border-color: #004c4c !important;
+    }
+
+    .bg-dark {
+        background-color: #008080 !important;
+    }
+
+    .card {
+        border: 1px solid #008080;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card-shadow">
+                <div class="card-body">
+                    <h2 class="text-center mb-4">Create an Account</h2>
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <form asp-action="Register" method="post">
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Name" class="control-label fw-bold">Full Name</label>
+                            <input asp-for="Name" class="form-control" placeholder="John Doe"/>
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Email" class="control-label fw-bold">Email Address</label>
+                            <input asp-for="Email" type="email" class="form-control" placeholder="name@example.com"/>
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="Password" class="control-label fw-bold">Password</label>
+                            <input asp-for="Password" type="password" class="form-control" placeholder="Create a password"/>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Create Account</button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <p>Already have an account? <a asp-controller="Account" asp-action="Login">Log in here</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}

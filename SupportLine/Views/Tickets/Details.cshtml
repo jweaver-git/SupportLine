@@ -1,0 +1,159 @@
+﻿@model SupportLine.Models.Ticket
+@using Microsoft.AspNetCore.Http
+
+@{
+    bool isAgent = ViewBag.IsAgent ?? false;
+    var themeColor = isAgent ? "#8B0000" : "#008080"; // Dark Red for Agents, Teal for Customers
+    ViewData["Title"] = "Ticket #" + Model.TicketID + " Details";
+
+    // A fix for Status badge colors
+    string badgeClass = "bg-secondary";
+    if (Model.StatusName == "Open") badgeClass = "bg-primary";
+    else if (Model.StatusName == "In Progress") badgeClass = "bg-warning text-dark";
+    else if (Model.StatusName == "Resolved") badgeClass = "bg-success";
+    else if (Model.StatusName == "Closed") badgeClass = "bg-danger";
+}
+
+<style>
+    body {
+        background-color: #F5F5DC !important;
+    }
+
+    .ticket-header {
+        background-color: @themeColor !important;
+        color: white;
+    }
+
+    .btn-theme {
+        background-color: @themeColor !important;
+        color: white !important;
+        border: none;
+    }
+
+    .btn-theme:hover {
+            filter: brightness(85%);
+    }
+
+    .chat-bubble {
+        border-radius: 15px;
+        padding: 15px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+    }
+
+    .agent-reply {
+        background-color: #fff;
+        border-left: 5px solid #8B0000;
+    }
+
+    .customer-reply {
+        background-color: #fff;
+        border-left: 5px solid #008080;
+    }
+
+    .bg-orange {
+        background-color: #fd7e14 !important;
+        color: white;
+    }
+</style>
+
+<div class="container mt-5 mb-5">
+    <div class="card-shadow">
+        <div class="card-header ticket-header d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Ticket #@Model.TicketID: @Model.Subject</h3>
+            <span class="badge @badgeClass fs-5">@Model.StatusName</span>
+        </div>
+
+        <div class="card-body bg-white">
+            <p class="text-muted">Submitted by <strong>@Model.CustomerName</strong> on @Model.DateCreated.ToString("f")</p>
+            <hr />
+            <div class="fs-5 p-3 bg-light rounded">
+                @Model.Description
+            </div>
+        </div>
+    </div>
+
+    <h4 class="mt-5 mb-3">Conversation History</h4>
+    @if (!Model.Responses.Any())
+    {
+        <p class="text-muted italic">No responses yet. Please wait for a support agent to review your request.</p>
+    }
+    else
+    {
+        @foreach (var reply in Model.Responses)
+        {
+            <div class="chat-bubble shadow-sm @(reply.UserRole == "Support Agent" ? "agent-reply" : "customer-reply")">
+                <div class="d-flex justify-content-between">
+                    <strong>@reply.UserName <small>(@reply.UserRole)</small></strong>
+                    <span class="text-muted small">@reply.DateReplied.ToString("g")</span>
+                </div>
+                <div class="mt-2">@reply.Message</div>
+            </div>
+        }
+    }
+
+    @if (Model.StatusName != "Closed")
+    {
+        <div class="card mt-5 shadow-sm">
+            <div class="card-body">
+                <h5>Add a Reponse</h5>
+                <form asp-action="AddResponse" method="post">
+                    <input type="hidden" name="TicketID" value="@Model.TicketID" />
+                    <textarea name="Message" class="form-control" rows="4" placeholder="Type your response here..."></textarea>
+
+                    <div class="d-flex justify-content-between mt-3">
+                        
+                        @if (isAgent)
+                        {
+                            <a asp-action="AgentDashboard" class="btn btn-outline-secondary">Back to Dashboard</a>
+                        }
+                        else
+                        {
+                            <a asp-action="CustomerDashboard" class="btn btn-outline-secondary">Back to My Tickets</a>
+                        }
+
+                        <div>
+                            @if (!isAgent)
+                            {
+                                <button type="submit" name="ActionType" value="Close" class="btn btn-danger me-2">Close My Ticket</button>
+                            }
+                            else
+                            {
+                                <button type="submit" name="ActionType" value="Resolve" class="btn btn-success me-2">Mark as Resolved</button>
+                            }
+                            <button type="submit" name="ActionType" value="Reply" class="btn btn-theme px-4">Post Response</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info mt-5 d-flex justify-content-between align-items-center">
+            <div>
+                This ticket is <strong>@Model.StatusName</strong>. No further responses can be added.
+            </div>
+            <div>
+                @if (isAgent)
+                {
+                    <a asp-action="AgentDashboard" class="btn btn-outline-secondary">Back to Dashboard</a>
+                }
+                else
+                {
+                    <a asp-action="CustomerDashboard" class="btn btn-outline-secondary">Back to My Tickets</a>
+
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@if (TempData["ResponseNotification"] != null)
+{
+    <script>
+        window.onload = function() {
+            alert("@TempData["ResponseNotification"]");
+        };
+    </script>
+}
